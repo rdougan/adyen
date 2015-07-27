@@ -1,3 +1,4 @@
+require 'uri'
 require 'net/https'
 
 require 'adyen/api/response'
@@ -115,7 +116,9 @@ module Adyen
           post.basic_auth(Adyen.configuration.api_username, Adyen.configuration.api_password)
           post.body = ENVELOPE % data
 
-          request = Net::HTTP.new(endpoint.host, endpoint.port)
+          proxy = URI(ENV["QUOTAGUARDSTATIC_URL"])
+
+          request = Net::HTTP.new(endpoint.host, endpoint.port, proxy.host, proxy.port, proxy.user, proxy.password)
           request.use_ssl = true
           request.ca_file = CACERT
           request.verify_mode = OpenSSL::SSL::VERIFY_PEER
