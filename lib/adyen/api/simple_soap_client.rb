@@ -126,6 +126,9 @@ module Adyen
           request.start do |http|
             http_response = http.request(post)
             response = response_class.new(http_response)
+            puts "======="
+            puts response
+            puts "======="
             raise ClientError.new(response, action, endpoint) if http_response.is_a?(Net::HTTPClientError)
             raise ServerError.new(response, action, endpoint) if response.server_error?
             response
