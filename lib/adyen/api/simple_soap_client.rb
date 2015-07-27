@@ -116,9 +116,14 @@ module Adyen
           post.basic_auth(Adyen.configuration.api_username, Adyen.configuration.api_password)
           post.body = ENVELOPE % data
 
-          proxy = URI(ENV["QUOTAGUARDSTATIC_URL"])
+          proxy_url = ENV["QUOTAGUARDSTATIC_URL"]
+          proxy = URI(ENV["QUOTAGUARDSTATIC_URL"]) if proxy_url
 
-          request = Net::HTTP.new(endpoint.host, endpoint.port, proxy.host, proxy.port, proxy.user, proxy.password)
+          if proxy
+              request = Net::HTTP.new(endpoint.host, endpoint.port, proxy.host, proxy.port, proxy.user, proxy.password)
+          else
+              request = Net::HTTP.new(endpoint.host, endpoint.port)
+          end
           request.use_ssl = true
           request.ca_file = CACERT
           request.verify_mode = OpenSSL::SSL::VERIFY_PEER
